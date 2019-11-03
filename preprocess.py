@@ -1,6 +1,8 @@
 import numpy as np
 import tifffile as tiff
 import os
+import tensorflow as tf
+from tensorflow import keras
 
 """Read tif files and convert to Keras friendly numpy arrays.
   
