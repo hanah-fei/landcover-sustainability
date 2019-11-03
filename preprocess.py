@@ -21,7 +21,7 @@ dev_path = '../satellite_data/dev/'
 test_path = '../satellite_data/test/'
 
 
-def main(train_path, dev_path, test_path):
+def create_data_dict(train_path, dev_path, test_path):
   label_dict, reverse_dict = create_label_mapping()
   X_train, Y_train = get_data(train_path, label_dict) 
   X_dev, Y_dev = get_data(dev_path, label_dict)
