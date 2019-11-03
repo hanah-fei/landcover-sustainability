@@ -1,7 +1,7 @@
 import shutil 
 import numpy
 import os
-
+import random
 random.seed(123)
 
 """Assumes you have downloaded the 13 band tif data from 
@@ -81,7 +81,8 @@ def get_and_shuffle(data_dir):
   shuffled_index = list(range(len(image_name_list)))
   random.shuffle(shuffled_index)
   filenames = [image_name_list[i] for i in shuffled_index]
-  return shuffled_filename
+  return filenames
 
-
+if __name__ == "__main__":
+   main(data_dir, out_dir)
 
