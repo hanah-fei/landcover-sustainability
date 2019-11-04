@@ -30,10 +30,6 @@ predictions = tf.keras.layers.Dense(10, activation='softmax')(x) # 10 classes
 
 model = tf.keras.Model(dense_input,predictions)
 
-# train only the top layers
-for layer in base_model.layers:
-    layer.trainable = False
-
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 X_train = data_dict['train']['X_train']
