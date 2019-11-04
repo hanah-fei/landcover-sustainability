@@ -35,10 +35,7 @@ x = base_model.output
 x = tf.keras.layers.GlobalAveragePooling2D()(x)
 x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regularizers.l2(0.01))(x)
 predictions = tf.keras.layers.Dense(10, activation='softmax')(x)
-
-# Train only the top layers
-for layer in base_model.layers:
-    layer.trainable = False
+model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
 
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
