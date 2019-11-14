@@ -4,8 +4,16 @@ import os
 import random
 random.seed(123)
 
-"""Assumes you have downloaded the 13 band tif data from 
-   http://madm.dfki.de/downloads with the following directory structure
+"""Two modes:
+   1) MODE = '3_channels'
+   Assumes you have downloaded the 3 band jpg data from
+   http://madm.dfki.de/downloads
+
+   2) MODE = '13_channels'
+   Assumes you have downloaded the 13 band tif data from 
+   http://madm.dfki.de/downloads 
+  
+   For both modes, data should have following directory structure
    where the sub-directory is the image label.
    
    data_dir/Forest/Forest_864.tif
@@ -31,11 +39,11 @@ random.seed(123)
 
 
 ## Set your data_dir and out_dir
-data_dir = '../satellite_data/all_bands/'
-out_dir = '../satellite_data/'
+data_dir = '../satellite_data/rgb/'
+out_dir = '../satellite_data/rgb_dataset/'
+MODE = '3_channels'
 
-
-def main(data_dir, out_dir):
+def main(data_dir, out_dir, MODE):
   filenames = get_and_shuffle(data_dir)
   train_images, dev_images, test_images = create_splits(filenames)
   for split in ['train', 'dev', 'test']:
@@ -46,18 +54,24 @@ def main(data_dir, out_dir):
       print("Warning: dir {} already exists".format(output_dir_split))
   
   print("Copying train data.")
-  write_data(train_images, 'train')
+  write_data(train_images, 'train', MODE)
   print("Copying dev data.")
-  write_data(dev_images, 'dev')
+  write_data(dev_images, 'dev', MODE)
   print("Copying test data.")
-  write_data(test_images, 'test')   
+  write_data(test_images, 'test', MODE)   
 
  
-def write_data(filenames, split):
+def write_data(filenames, split, MODE):
   """Copy images to new outdir."""
   for name in filenames:
     source = data_dir + name.split('_')[0] + '/' + name
-    destination = out_dir + split + '/' + name
+    if MODE == '3_channels':
+      label = name.split('_')[0]
+      destination = out_dir + split + '/' + label + '/' +  name
+      if not os.path.exists(out_dir + split + '/' + label):
+        os.mkdir(out_dir + split + '/' + label)
+    else:
+      destination = out_dir + split + '/' + name
     dest = shutil.copyfile(source, destination)  
  
 
@@ -75,8 +89,9 @@ def get_and_shuffle(data_dir):
   """Build a shuffled list of image names."""
   image_name_list = []
   for label_name in os.listdir(data_dir):
-    for image_name in os.listdir(os.path.join(data_dir, label_name)):
-      image_name_list.append(image_name)
+    if label_name != '.DS_Store':
+      for image_name in os.listdir(os.path.join(data_dir, label_name)):
+        image_name_list.append(image_name)
   # Shuffle the data
   shuffled_index = list(range(len(image_name_list)))
   random.shuffle(shuffled_index)
@@ -84,5 +99,5 @@ def get_and_shuffle(data_dir):
   return filenames
 
 if __name__ == "__main__":
-   main(data_dir, out_dir)
+   main(data_dir, out_dir, MODE)
 
