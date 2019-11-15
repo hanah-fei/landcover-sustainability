@@ -33,7 +33,26 @@ test_generator = datagen.flow_from_directory(
     TEST_DIRECTORY,
     target_size=(64, 64),
     batch_size=1, # batch size for test?
+    shuffle = False,
     class_mode='categorical')
+
+
+def recall_m(y_true, y_pred):
+  true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+  possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+  recall = true_positives / (possible_positives + K.epsilon())
+  return recall
+
+def precision_m(y_true, y_pred):
+  true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+  predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+  precision = true_positives / (predicted_positives + K.epsilon())
+  return precision
+
+def f1_m(y_true, y_pred):
+  precision = precision_m(y_true, y_pred)
+  recall = recall_m(y_true, y_pred)
+  return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
 x = base_model.output
 x = tf.keras.layers.GlobalAveragePooling2D()(x)
@@ -41,14 +60,17 @@ x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regu
 predictions = tf.keras.layers.Dense(10, activation='softmax')(x)
 model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
 
-# Train only the top layers
-#for layer in base_model.layers:
-#  layer.trainable = False
-
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', f1_m,precision_m, recall_m])
 
 history = model.fit_generator(
       train_generator,
       epochs=10,
       verbose=1,
       validation_data = validation_generator)
+
+
+# Compute metrics on test set
+loss, accuracy, f1_score, precision, recall = model.evaluate_generator(test_generator)
+test_probabilities = model.predict_generator(test_generator)
+test_predictions = np.argmax(results, axis = 1)
+
