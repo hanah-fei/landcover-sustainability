@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard, ReduceLROnPlateau
 import ssl
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import confusion_matrix
@@ -43,7 +43,7 @@ test_generator = datagen.flow_from_directory(
 
 tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
                           write_graph=True, write_images=False)
-
+call = ReduceLROnPlateau(monitor='val_loss')
 x = base_model.output
 x = tf.keras.layers.GlobalAveragePooling2D()(x)
 x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regularizers.l2(0.1))(x)
@@ -57,7 +57,7 @@ history = model.fit_generator(
       epochs=10,
       verbose=1,
       validation_data = validation_generator,
-      callbacks=[tensorboard])
+      callbacks=[tensorboard, call])
 
 
 # Compute metrics on test set
@@ -66,9 +66,8 @@ test_probabilities = model.predict_generator(test_generator)
 test_predictions = np.argmax(results, axis = 1)
 test_labels = test_generator.classes
 classes = list(test_generator.class_indices.keys())
-print(confusion_matrix(test_labels, test_predictions)
+print(confusion_matrix(test_labels, test_predictions))
 print(classification_report(test_labels, test_predictions, target_names=classes))
-print(
 
 
 
