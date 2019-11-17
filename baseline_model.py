@@ -1,8 +1,11 @@
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras.callbacks import TensorBoard
 import ssl
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.metrics import roc_curve
 
 """Baseline model. RGB only, Resnet50 architecture."""
 
@@ -37,22 +40,9 @@ test_generator = datagen.flow_from_directory(
     class_mode='categorical')
 
 
-def recall_m(y_true, y_pred):
-  true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-  possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-  recall = true_positives / (possible_positives + K.epsilon())
-  return recall
 
-def precision_m(y_true, y_pred):
-  true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-  predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-  precision = true_positives / (predicted_positives + K.epsilon())
-  return precision
-
-def f1_m(y_true, y_pred):
-  precision = precision_m(y_true, y_pred)
-  recall = recall_m(y_true, y_pred)
-  return 2*((precision*recall)/(precision+recall+K.epsilon()))
+tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
+                          write_graph=True, write_images=False)
 
 x = base_model.output
 x = tf.keras.layers.GlobalAveragePooling2D()(x)
@@ -60,17 +50,26 @@ x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regu
 predictions = tf.keras.layers.Dense(10, activation='softmax')(x)
 model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', f1_m,precision_m, recall_m])
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
 
 history = model.fit_generator(
       train_generator,
       epochs=10,
       verbose=1,
-      validation_data = validation_generator)
+      validation_data = validation_generator,
+      callbacks=[tensorboard])
 
 
 # Compute metrics on test set
-loss, accuracy, f1_score, precision, recall = model.evaluate_generator(test_generator)
+loss, accuracy = model.evaluate_generator(test_generator)
 test_probabilities = model.predict_generator(test_generator)
 test_predictions = np.argmax(results, axis = 1)
+test_labels = test_generator.classes
+classes = list(test_generator.class_indices.keys())
+print(confusion_matrix(test_labels, test_predictions)
+print(classification_report(test_labels, test_predictions, target_names=classes))
+print(
+
+
+
 
