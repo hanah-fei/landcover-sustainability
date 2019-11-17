@@ -63,7 +63,7 @@ history = model.fit_generator(
 # Compute metrics on test set
 loss, accuracy = model.evaluate_generator(test_generator)
 test_probabilities = model.predict_generator(test_generator)
-test_predictions = np.argmax(results, axis = 1)
+test_predictions = np.argmax(test_probabilities, axis = 1)
 test_labels = test_generator.classes
 classes = list(test_generator.class_indices.keys())
 print(confusion_matrix(test_labels, test_predictions))
