@@ -7,6 +7,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.metrics import roc_curve
 
+
 """Baseline model. RGB only, Resnet50 architecture."""
 
 TRAIN_DIRECTORY = '../satellite_data/rgb_dataset/train'
@@ -46,15 +47,15 @@ tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0,
 call = ReduceLROnPlateau(monitor='val_loss')
 x = base_model.output
 x = tf.keras.layers.GlobalAveragePooling2D()(x)
-x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regularizers.l2(0.1))(x)
+x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regularizers.l2(0.01))(x)
 predictions = tf.keras.layers.Dense(10, activation='softmax')(x)
 model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
 
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 history = model.fit_generator(
       train_generator,
-      epochs=10,
+      epochs=20,
       verbose=1,
       validation_data = validation_generator,
       callbacks=[tensorboard, call])
