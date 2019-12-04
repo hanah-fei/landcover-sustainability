@@ -69,6 +69,8 @@ classes = list(test_generator.class_indices.keys())
 print(confusion_matrix(test_labels, test_predictions))
 print(classification_report(test_labels, test_predictions, target_names=classes))
 
+# Export model
+model.save('saved_model', save_format='tf')
 
 
 
