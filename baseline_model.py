@@ -19,8 +19,7 @@ ssl._create_default_https_context = ssl._create_unverified_context
 base_model = tf.keras.applications.ResNet50(weights='imagenet', include_top=False)
 
 # Load data and split into train/validation
-# Note that there is no test set here!
-datagen = ImageDataGenerator(rescale=1./255) # set validation split
+datagen = ImageDataGenerator(rescale=1./255)
 train_generator = datagen.flow_from_directory(
     TRAIN_DIRECTORY,
     target_size=(64, 64),
@@ -36,7 +35,7 @@ validation_generator = datagen.flow_from_directory(
 test_generator = datagen.flow_from_directory(
     TEST_DIRECTORY,
     target_size=(64, 64),
-    batch_size=1, # batch size for test?
+    batch_size=1,
     shuffle = False,
     class_mode='categorical')
 
@@ -51,7 +50,7 @@ x = tf.keras.layers.Dense(1024, activation='relu', kernel_regularizer=keras.regu
 predictions = tf.keras.layers.Dense(10, activation='softmax')(x)
 model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
 
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 history = model.fit_generator(
       train_generator,
