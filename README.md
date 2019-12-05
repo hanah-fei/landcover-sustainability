@@ -1,7 +1,8 @@
 # landcover-sustainability
 ## Stanford CS230 Project 
-Temporal analysis of regional sustainability using CNNs and satellite data 
-An investigation into landcover classification with Sentinel 2 data
+
+#### Temporal analysis of regional sustainability using CNNs and satellite data. 
+#### An investigation into landcover classification with Sentinel 2 data
 
 ### build_dataset.py
 Takes RGB or 13 spectral band data and shuffles, splits into training/dev/test 80/20/20
