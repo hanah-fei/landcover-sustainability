@@ -2,7 +2,10 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-DATA_DIRECTORY = '../satellite_data'
+"Load data, create a simple CNN model, and train on RGB data"
+
+
+DATA_DIRECTORY = '../satellite_data/rgb'
 
 # Load data and split into train/validation
 # Note that there is no test set here!
@@ -48,10 +51,8 @@ model.compile(loss='categorical_crossentropy',
 # Train the model
 history = model.fit_generator(
       train_generator,
-      steps_per_epoch=8,  
       epochs=4,
       verbose=1,
-      validation_data = validation_generator,
-      validation_steps=8)
+      validation_data = validation_generator)
 
 
