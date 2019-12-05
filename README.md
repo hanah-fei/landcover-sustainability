@@ -1,5 +1,5 @@
 # landcover-sustainability
-##Stanford CS230 Project 
+## Stanford CS230 Project 
 Temporal analysis of regional sustainability using CNNs and satellite data 
 An investigation into landcover classification with Sentinel 2 data
 
