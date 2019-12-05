@@ -74,3 +74,4 @@ def create_dataset(image_files_list):
 parsed_records = create_dataset(image_files_list)
 probabilities = model.predict_generator(parsed_records)
 predictions = np.argmax(probabilities, axis = 1)
+print(collections.Counter(predictions))
